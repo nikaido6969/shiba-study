@@ -6263,7 +6263,6 @@ class App {
   }
 
   init() {
-    this.initializeSoundSystem();
     // SoundSystem is a global object from part 6, use it directly
     if (typeof SoundSystem !== 'undefined' && SoundSystem.init) {
       SoundSystem.init();
@@ -6272,6 +6271,25 @@ class App {
     this.quizController = new QuizController(this.playerData, SoundSystem);
     this.memoryController = new MemoryController(this.playerData, SoundSystem);
     this.speedCalcController = new SpeedCalcController(this.playerData, SoundSystem);
+
+    this.screenManager.showScreen('#title-screen');
+    this.wireUpTitleScreen();
+    this.wireUpHomeScreen();
+    this.wireUpQuizScreen();
+    this.wireUpMemoryScreen();
+    this.wireUpSpeedCalcScreen();
+    this.wireUpResultScreen();
+    this.wireUpProgressScreen();
+    this.wireUpSettingsScreen();
+    this.wireUpBackButtons();
+
+    console.log('Shiba Study House initialized');
+  }
+
+  initializeSoundSystem() {
+    if (typeof SoundSystem !== 'undefined' && SoundSystem.init) {
+      SoundSystem.init();
+    }
   }
 
   wireUpTitleScreen() {
