@@ -1194,7 +1194,7 @@
         </div>
     </div>
 
-  <script>
+    <script>
 // ============================================================================
 // SHIBA DOG STUDY HOUSE - SOUND SYSTEM, PARTICLE EFFECTS & INTEGRATION
 // Pure JavaScript - No HTML/CSS Required
@@ -1266,7 +1266,7 @@ const SoundSystem = {
     }
   },
 
-  // Ascending two-note chime: C5->E5
+  // Ascending two-note chime: C5→E5
   _playCorrectionChime(gain, ctx) {
     const notes = [523.25, 659.25]; // C5, E5
     const duration = 0.1;
@@ -1362,7 +1362,7 @@ const SoundSystem = {
     source.stop(now + duration);
   },
 
-  // Happy three-note melody: C5->E5->G5
+  // Happy three-note melody: C5→E5→G5
   _playMatchChime(gain, ctx) {
     const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
     const duration = 0.08;
@@ -1385,7 +1385,7 @@ const SoundSystem = {
     gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
   },
 
-  // Level up fanfare: C4->E4->G4->C5
+  // Level up fanfare: C4→E4→G4→C5
   _playLevelUpFanfare(gain, ctx) {
     const notes = [261.63, 329.63, 392.00, 523.25]; // C4, E4, G4, C5
     const duration = 0.15;
@@ -1458,7 +1458,7 @@ const SoundSystem = {
     osc.stop(now + duration);
   },
 
-  // Victory melody: C5->D5->E5->G5->C6
+  // Victory melody: C5→D5→E5→G5→C6
   _playCompleteVictory(gain, ctx) {
     const notes = [523.25, 587.33, 659.25, 783.99, 1046.50]; // C5, D5, E5, G5, C6
     const durations = [0.15, 0.15, 0.15, 0.15, 0.3];
@@ -2434,6 +2434,7 @@ function startParticleLoop(canvas) {
 // END OF SOUND SYSTEM, PARTICLE EFFECTS & INTEGRATION
 // ============================================================================
 
+
 /**
  * 柴犬お勉強ハウス (Shiba Study House) - Part 2: Shiba Dog Character Drawing System
  * Canvas 2D Drawing Module for Realistic Shiba Dog Character Rendering
@@ -3333,10 +3334,7 @@ const drawShibaGrid = (ctx, startX, startY, cols = 3, rows = 3, spacing = 120) =
   }
 };
 
-// Export for use in modules or expose globally
-if (typeof module !== 'undefined' && module.exports) {
-
-}
+// (exports removed for browser use)
 
 /**
  * Advanced Shiba Rendering Utilities
@@ -3625,20 +3623,8 @@ const drawShibaWithAchievement = (ctx, x, y, achievement = 'star') => {
   ctx.fillText(badgeText, badgeX, badgeY);
 };
 
-/**
- * Export extended utilities
- */
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports.drawShibaCustomColors = drawShibaCustomColors;
-  module.exports.drawShibaCircle = drawShibaCircle;
-  module.exports.drawStudentShibaWithProgress = drawStudentShibaWithProgress;
-  module.exports.drawInteractiveShibaEyes = drawInteractiveShibaEyes;
-  module.exports.drawShibaComparison = drawShibaComparison;
-  module.exports.drawShibaWithParticles = drawShibaWithParticles;
-  module.exports.drawExpressionMatrix = drawExpressionMatrix;
-  module.exports.drawShibaTrainingScene = drawShibaTrainingScene;
-  module.exports.drawShibaWithAchievement = drawShibaWithAchievement;
-}
+// (exports removed for browser use)
+
 
 // ============================================================================
 // 柴犬お勉強ハウス - Quiz Engine & Data
@@ -4526,6 +4512,7 @@ const SpeedCalc = {
 // END OF QUIZ ENGINE
 // ============================================================================
 
+
 // ============================================================================
 // SHIBA DOG STUDY HOUSE - MEMORY GAMES & WORD GAMES
 // Pure JavaScript Implementation (No HTML/CSS)
@@ -5299,6 +5286,7 @@ const WordChain = {
 // ============================================================================
 
 
+
 // ============================================================================
 // UTILITY FUNCTIONS
 // ============================================================================
@@ -5353,6 +5341,7 @@ function shuffleArray(array) {
 // END OF FILE
 // ============================================================================
 
+
 // ============================================================================
 // 柴犬お勉強ハウス - Game Engine & Screen Manager  
 // ============================================================================
@@ -5376,16 +5365,20 @@ class ScreenManager {
     
     allScreens.forEach(id => {
       const elem = document.querySelector(id);
-      if (elem) elem.style.display = 'none';
+      if (elem) {
+        elem.classList.remove('active');
+        elem.style.display = 'none';
+      }
     });
 
     // Show target screen with fade-in
     const targetScreen = document.querySelector(screenId);
     if (targetScreen) {
-      targetScreen.style.display = 'block';
+      targetScreen.classList.add('active');
+      targetScreen.style.display = '';
       targetScreen.style.opacity = '0';
       targetScreen.style.transition = 'opacity 0.3s ease';
-      
+
       setTimeout(() => {
         targetScreen.style.opacity = '1';
       }, 10);
@@ -6184,7 +6177,7 @@ class HomeScreenManager {
 
         <div class="level-progress">
           <div class="progress-label">
-            Lv.${stats.level} -> Lv.${stats.level + 1}
+            Lv.${stats.level} → Lv.${stats.level + 1}
           </div>
           <div class="progress-bar">
             <div class="progress-fill" style="width: ${progressPercent}%"></div>
@@ -6285,7 +6278,8 @@ class App {
     const titleScreen = document.querySelector('#title-screen');
     if (!titleScreen) return;
 
-    const startBtn = titleScreen.querySelector('[data-action="start"]') ||
+    const startBtn = titleScreen.querySelector('.start-button') ||
+                     titleScreen.querySelector('[data-action="start"]') ||
                      titleScreen.querySelector('button:first-of-type');
     
     if (startBtn) {
@@ -6692,6 +6686,7 @@ document.addEventListener('DOMContentLoaded', () => {
   app.init();
   window.app = app;
 });
-  </script>
+
+    </script>
 </body>
 </html>
