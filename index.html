@@ -1194,7 +1194,7 @@
         </div>
     </div>
 
-    <script>
+  <script>
 // ============================================================================
 // SHIBA DOG STUDY HOUSE - SOUND SYSTEM, PARTICLE EFFECTS & INTEGRATION
 // Pure JavaScript - No HTML/CSS Required
@@ -1266,7 +1266,7 @@ const SoundSystem = {
     }
   },
 
-  // Ascending two-note chime: C5→E5
+  // Ascending two-note chime: C5->E5
   _playCorrectionChime(gain, ctx) {
     const notes = [523.25, 659.25]; // C5, E5
     const duration = 0.1;
@@ -1362,7 +1362,7 @@ const SoundSystem = {
     source.stop(now + duration);
   },
 
-  // Happy three-note melody: C5→E5→G5
+  // Happy three-note melody: C5->E5->G5
   _playMatchChime(gain, ctx) {
     const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
     const duration = 0.08;
@@ -1385,7 +1385,7 @@ const SoundSystem = {
     gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
   },
 
-  // Level up fanfare: C4→E4→G4→C5
+  // Level up fanfare: C4->E4->G4->C5
   _playLevelUpFanfare(gain, ctx) {
     const notes = [261.63, 329.63, 392.00, 523.25]; // C4, E4, G4, C5
     const duration = 0.15;
@@ -1458,7 +1458,7 @@ const SoundSystem = {
     osc.stop(now + duration);
   },
 
-  // Victory melody: C5→D5→E5→G5→C6
+  // Victory melody: C5->D5->E5->G5->C6
   _playCompleteVictory(gain, ctx) {
     const notes = [523.25, 587.33, 659.25, 783.99, 1046.50]; // C5, D5, E5, G5, C6
     const durations = [0.15, 0.15, 0.15, 0.15, 0.3];
@@ -2434,7 +2434,6 @@ function startParticleLoop(canvas) {
 // END OF SOUND SYSTEM, PARTICLE EFFECTS & INTEGRATION
 // ============================================================================
 
-
 /**
  * 柴犬お勉強ハウス (Shiba Study House) - Part 2: Shiba Dog Character Drawing System
  * Canvas 2D Drawing Module for Realistic Shiba Dog Character Rendering
@@ -3335,6 +3334,10 @@ const drawShibaGrid = (ctx, startX, startY, cols = 3, rows = 3, spacing = 120) =
 };
 
 // Export for use in modules or expose globally
+if (typeof module !== 'undefined' && module.exports) {
+
+}
+
 /**
  * Advanced Shiba Rendering Utilities
  * Additional helper functions and effects for enhanced rendering
@@ -3625,7 +3628,17 @@ const drawShibaWithAchievement = (ctx, x, y, achievement = 'star') => {
 /**
  * Export extended utilities
  */
-
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports.drawShibaCustomColors = drawShibaCustomColors;
+  module.exports.drawShibaCircle = drawShibaCircle;
+  module.exports.drawStudentShibaWithProgress = drawStudentShibaWithProgress;
+  module.exports.drawInteractiveShibaEyes = drawInteractiveShibaEyes;
+  module.exports.drawShibaComparison = drawShibaComparison;
+  module.exports.drawShibaWithParticles = drawShibaWithParticles;
+  module.exports.drawExpressionMatrix = drawExpressionMatrix;
+  module.exports.drawShibaTrainingScene = drawShibaTrainingScene;
+  module.exports.drawShibaWithAchievement = drawShibaWithAchievement;
+}
 
 // ============================================================================
 // 柴犬お勉強ハウス - Quiz Engine & Data
@@ -4427,10 +4440,91 @@ function calculateQuizScore(result) {
 // 6. SPEED CALC GAME
 // ============================================================================
 
+const SpeedCalc = {
+  score: 0,
+  timeLimit: 30,
+  currentProblem: null,
+  problemsSolved: 0,
+  startTime: null,
+  difficulty: 1,
+
+  init(difficulty) {
+    this.difficulty = difficulty;
+    this.score = 0;
+    this.problemsSolved = 0;
+    this.startTime = Date.now();
+    this.generateProblem();
+  },
+
+  generateProblem() {
+    let a, b, op, answer, display;
+
+    if (this.difficulty === 1) {
+      a = Math.floor(Math.random() * 9) + 1;
+      b = Math.floor(Math.random() * 9) + 1;
+      op = Math.random() > 0.5 ? '+' : '-';
+
+      if (op === '+') {
+        answer = a + b;
+      } else {
+        answer = Math.abs(a - b);
+      }
+      display = `${Math.max(a, b)} ${op} ${Math.min(a, b)} = ?`;
+    } else if (this.difficulty === 2) {
+      a = Math.floor(Math.random() * 9) + 1;
+      b = Math.floor(Math.random() * 9) + 1;
+      answer = a * b;
+      display = `${a} × ${b} = ?`;
+    } else {
+      a = Math.floor(Math.random() * 85) + 10;
+      b = Math.floor(Math.random() * 85) + 10;
+      op = Math.random() > 0.5 ? '+' : '-';
+
+      if (op === '+') {
+        answer = a + b;
+      } else {
+        answer = Math.abs(a - b);
+      }
+      display = `${Math.max(a, b)} ${op} ${Math.min(a, b)} = ?`;
+    }
+
+    this.currentProblem = { display, answer };
+  },
+
+  checkAnswer(num) {
+    if (!this.currentProblem) {
+      return false;
+    }
+
+    const correct = num === this.currentProblem.answer;
+    if (correct) {
+      this.score += 10;
+      this.problemsSolved++;
+    }
+    this.generateProblem();
+    return correct;
+  },
+
+  isTimeUp() {
+    return (Date.now() - this.startTime) >= this.timeLimit * 1000;
+  },
+
+  getResult() {
+    const actualTime = (Date.now() - this.startTime) / 1000;
+    return {
+      difficulty: this.difficulty,
+      problemsSolved: this.problemsSolved,
+      score: this.score,
+      timeSpent: actualTime,
+      problemsPerSecond: (this.problemsSolved / actualTime).toFixed(2),
+      accuracy: ((this.score / (this.problemsSolved * 10)) * 100).toFixed(0)
+    };
+  }
+};
+
 // ============================================================================
 // END OF QUIZ ENGINE
 // ============================================================================
-
 
 // ============================================================================
 // SHIBA DOG STUDY HOUSE - MEMORY GAMES & WORD GAMES
@@ -5204,231 +5298,6 @@ const WordChain = {
 // SPEED CALCULATION GAME
 // ============================================================================
 
-const SpeedCalcEngine = {
-  score: 0,
-  timeLimit: 30000, // 30 seconds in ms
-  currentProblem: null,
-  solved: 0,
-  wrong: 0,
-  startTime: null,
-  difficulty: 1,
-  endTime: null,
-  problems: [],
-
-  /**
-   * Initialize speed calculation game
-   * @param {number} difficulty - 1, 2, or 3
-   */
-  init(difficulty = 1) {
-    this.difficulty = difficulty;
-    this.score = 0;
-    this.solved = 0;
-    this.wrong = 0;
-    this.startTime = Date.now();
-    this.endTime = null;
-    this.problems = [];
-    
-    this.currentProblem = this.generateProblem();
-    return this.currentProblem;
-  },
-
-  /**
-   * Generate a math problem based on difficulty
-   * @returns {object}
-   */
-  generateProblem() {
-    let problem;
-
-    if (this.difficulty === 1) {
-      // Single digit addition/subtraction
-      problem = this.generateEasyProblem();
-    } else if (this.difficulty === 2) {
-      // Two digit addition/subtraction, single digit multiplication
-      problem = this.generateMediumProblem();
-    } else {
-      // Mixed operations, larger numbers
-      problem = this.generateHardProblem();
-    }
-
-    this.problems.push(problem);
-    return problem;
-  },
-
-  /**
-   * Generate easy problem (single digit)
-   * @returns {object}
-   */
-  generateEasyProblem() {
-    const types = ['add', 'subtract'];
-    const type = types[Math.floor(Math.random() * types.length)];
-    
-    const a = Math.floor(Math.random() * 9) + 1;
-    const b = Math.floor(Math.random() * 9) + 1;
-
-    let display, answer;
-    if (type === 'add') {
-      display = `${a}+${b}`;
-      answer = a + b;
-    } else {
-      const max = Math.max(a, b);
-      const min = Math.min(a, b);
-      display = `${max}-${min}`;
-      answer = max - min;
-    }
-
-    return { display, answer, type };
-  },
-
-  /**
-   * Generate medium problem
-   * @returns {object}
-   */
-  generateMediumProblem() {
-    const types = ['add', 'subtract', 'multiply'];
-    const type = types[Math.floor(Math.random() * types.length)];
-
-    let a, b, display, answer;
-
-    if (type === 'multiply') {
-      a = Math.floor(Math.random() * 9) + 1;
-      b = Math.floor(Math.random() * 9) + 1;
-      display = `${a}×${b}`;
-      answer = a * b;
-    } else {
-      a = Math.floor(Math.random() * 90) + 10;
-      b = Math.floor(Math.random() * 90) + 10;
-
-      if (type === 'add') {
-        display = `${a}+${b}`;
-        answer = a + b;
-      } else {
-        const max = Math.max(a, b);
-        const min = Math.min(a, b);
-        display = `${max}-${min}`;
-        answer = max - min;
-      }
-    }
-
-    return { display, answer, type };
-  },
-
-  /**
-   * Generate hard problem
-   * @returns {object}
-   */
-  generateHardProblem() {
-    const types = ['add', 'subtract', 'multiply', 'divide'];
-    const type = types[Math.floor(Math.random() * types.length)];
-
-    let a, b, display, answer;
-
-    if (type === 'multiply') {
-      a = Math.floor(Math.random() * 99) + 1;
-      b = Math.floor(Math.random() * 99) + 1;
-      display = `${a}×${b}`;
-      answer = a * b;
-    } else if (type === 'divide') {
-      const divisor = Math.floor(Math.random() * 9) + 1;
-      answer = Math.floor(Math.random() * 9) + 1;
-      a = divisor * answer;
-      display = `${a}÷${divisor}`;
-    } else {
-      a = Math.floor(Math.random() * 990) + 10;
-      b = Math.floor(Math.random() * 990) + 10;
-
-      if (type === 'add') {
-        display = `${a}+${b}`;
-        answer = a + b;
-      } else {
-        const max = Math.max(a, b);
-        const min = Math.min(a, b);
-        display = `${max}-${min}`;
-        answer = max - min;
-      }
-    }
-
-    return { display, answer, type };
-  },
-
-  /**
-   * Check if answer is correct
-   * @param {number} userAnswer
-   * @returns {boolean}
-   */
-  checkAnswer(userAnswer) {
-    const isCorrect = userAnswer === this.currentProblem.answer;
-
-    if (isCorrect) {
-      this.solved++;
-      this.score += 10;
-    } else {
-      this.wrong++;
-    }
-
-    this.currentProblem = this.generateProblem();
-    return isCorrect;
-  },
-
-  /**
-   * Get time remaining in milliseconds
-   * @returns {number}
-   */
-  getTimeRemaining() {
-    if (this.startTime === null) return this.timeLimit;
-    const elapsed = Date.now() - this.startTime;
-    return Math.max(0, this.timeLimit - elapsed);
-  },
-
-  /**
-   * Check if time is up
-   * @returns {boolean}
-   */
-  isTimeUp() {
-    return this.getTimeRemaining() <= 0;
-  },
-
-  /**
-   * Get time as formatted string
-   * @returns {string}
-   */
-  getTimeString() {
-    const ms = this.getTimeRemaining();
-    const seconds = Math.ceil(ms / 1000);
-    return `${seconds}s`;
-  },
-
-  /**
-   * End the game
-   */
-  endGame() {
-    this.endTime = Date.now();
-  },
-
-  /**
-   * Get game result
-   * @returns {object}
-   */
-  getResult() {
-    const accuracy = this.solved / (this.solved + this.wrong) * 100;
-    const baseXP = this.solved * 20;
-    const accuracyBonus = accuracy > 90 ? 100 : accuracy > 80 ? 50 : 0;
-    const totalXP = baseXP + accuracyBonus;
-    const coins = this.solved * 3;
-
-    return {
-      xp: totalXP,
-      coins: coins,
-      solved: this.solved,
-      wrong: this.wrong,
-      accuracy: accuracy.toFixed(1),
-      grade: accuracy > 95 ? 'S' : 
-             accuracy > 85 ? 'A' : 
-             accuracy > 75 ? 'B' : 
-             accuracy > 65 ? 'C' : 'D',
-      problems: this.problems.length
-    };
-  }
-};
 
 // ============================================================================
 // UTILITY FUNCTIONS
@@ -5483,7 +5352,6 @@ function shuffleArray(array) {
 // ============================================================================
 // END OF FILE
 // ============================================================================
-
 
 // ============================================================================
 // 柴犬お勉強ハウス - Game Engine & Screen Manager  
@@ -5908,7 +5776,7 @@ class AchievementSystem {
 class QuizController {
   constructor(playerData, soundSystem) {
     this.playerData = playerData;
-    this.soundSystem = soundSystem;
+    // SoundSystem is global: soundSystem;
     this.currentQuiz = null;
     this.currentQuestionIdx = 0;
     this.correctCount = 0;
@@ -5982,9 +5850,9 @@ class QuizController {
 
     if (isCorrect) {
       this.correctCount++;
-      this.soundSystem.playSE('correct');
+      SoundSystem.playSE('correct');
     } else {
-      this.soundSystem.playSE('wrong');
+      SoundSystem.playSE('wrong');
     }
 
     this.answers.push({
@@ -6077,7 +5945,7 @@ class QuizController {
 class MemoryController {
   constructor(playerData, soundSystem) {
     this.playerData = playerData;
-    this.soundSystem = soundSystem;
+    // SoundSystem is global: soundSystem;
     this.game = null;
     this.theme = null;
   }
@@ -6090,7 +5958,7 @@ class MemoryController {
       return;
     }
 
-    this.game = new MemoryGame(theme);
+    MemoryGame.init(theme);
     this.game.init();
     this.renderBoard();
   }
@@ -6104,7 +5972,7 @@ class MemoryController {
     
     for (let i = 0; i < 16; i++) {
       const card = this.game.cards[i];
-      const isFlipped = this.game.flipped.includes(i);
+      const isFlipped = MemoryGame.flippedCards.includes(i);
       html += `
         <div class="memory-card ${isFlipped ? 'flipped' : ''}" data-idx="${i}">
           <div class="card-content">${isFlipped ? card.value : '？'}</div>
@@ -6124,15 +5992,15 @@ class MemoryController {
   }
 
   handleCardClick(idx) {
-    if (!this.game || this.game.flipped.includes(idx)) return;
+    if (!this.game || MemoryGame.flippedCards.includes(idx)) return;
 
-    this.game.flip(idx);
-    this.soundSystem.playSE('flip');
+    MemoryGame.flipCard(idx);
+    SoundSystem.playSE('flip');
     this.renderBoard();
 
-    if (this.game.isComplete()) {
-      const results = this.game.getResults();
-      const score = Math.max(0, 100 - results.flips * 2);
+    if (MemoryGame.isComplete()) {
+      const results = MemoryGame.getResult();
+      const score = Math.max(0, 100 - results.moves * 2);
       
       this.playerData.recordGame('memory', score);
       this.playerData.addScore(score);
@@ -6141,7 +6009,7 @@ class MemoryController {
         window.gameResults = {
           type: 'memory',
           score: score,
-          flips: results.flips,
+          flips: results.moves,
           theme: this.theme
         };
       }, 500);
@@ -6156,7 +6024,7 @@ class MemoryController {
 class SpeedCalcController {
   constructor(playerData, soundSystem) {
     this.playerData = playerData;
-    this.soundSystem = soundSystem;
+    // SoundSystem is global: soundSystem;
     this.engine = null;
     this.difficulty = 1;
     this.timeRemaining = 60;
@@ -6174,7 +6042,7 @@ class SpeedCalcController {
       return;
     }
 
-    this.engine = new SpeedCalcEngine(difficulty);
+    SpeedCalc.init(difficulty);
     this.renderScreen();
     this.startTimer();
   }
@@ -6183,7 +6051,7 @@ class SpeedCalcController {
     const speedScreen = document.querySelector('#speed-calc-screen');
     if (!speedScreen) return;
 
-    const problem = this.engine.getCurrentProblem();
+    const problem = SpeedCalc.currentProblem.display;
     const keypadHtml = typeof createKeypad === 'function' ? createKeypad() : '';
 
     speedScreen.innerHTML = `
@@ -6213,17 +6081,17 @@ class SpeedCalcController {
   }
 
   submitAnswer(answer) {
-    if (this.engine.checkAnswer(answer)) {
+    if (SpeedCalc.checkAnswer(answer)) {
       this.problemsSolved++;
-      this.soundSystem.playSE('correct');
-      this.engine.nextProblem();
+      SoundSystem.playSE('correct');
+      SpeedCalc.generateProblem();
       
       const answerInput = document.getElementById('calc-answer');
       if (answerInput) answerInput.value = '';
       
       this.renderScreen();
     } else {
-      this.soundSystem.playSE('wrong');
+      SoundSystem.playSE('wrong');
       const answerInput = document.getElementById('calc-answer');
       if (answerInput) {
         answerInput.value = '';
@@ -6316,7 +6184,7 @@ class HomeScreenManager {
 
         <div class="level-progress">
           <div class="progress-label">
-            Lv.${stats.level} → Lv.${stats.level + 1}
+            Lv.${stats.level} -> Lv.${stats.level + 1}
           </div>
           <div class="progress-bar">
             <div class="progress-fill" style="width: ${progressPercent}%"></div>
@@ -6393,7 +6261,7 @@ class App {
   constructor() {
     this.screenManager = new ScreenManager();
     this.playerData = new PlayerData();
-    this.soundSystem = null;
+    // SoundSystem is global: null;
     this.achievementSystem = new AchievementSystem(this.playerData);
     this.quizController = null;
     this.memoryController = null;
@@ -6403,41 +6271,14 @@ class App {
 
   init() {
     this.initializeSoundSystem();
-
-    this.screenManager.showScreen('#title-screen');
-    this.wireUpTitleScreen();
-    this.wireUpHomeScreen();
-    this.wireUpQuizScreen();
-    this.wireUpMemoryScreen();
-    this.wireUpSpeedCalcScreen();
-    this.wireUpResultScreen();
-    this.wireUpProgressScreen();
-    this.wireUpSettingsScreen();
-    this.wireUpBackButtons();
-
-    console.log('Shiba Study House initialized');
-  }
-
-  initializeSoundSystem() {
-    if (typeof SoundSystem !== 'undefined' && !this.soundSystem) {
-      this.soundSystem = new SoundSystem();
-      if (this.soundSystem.init) {
-        this.soundSystem.init();
-      }
+    // SoundSystem is a global object from part 6, use it directly
+    if (typeof SoundSystem !== 'undefined' && SoundSystem.init) {
+      SoundSystem.init();
     }
 
-    if (!this.soundSystem) {
-      this.soundSystem = {
-        init: () => {},
-        playSE: (type) => {},
-        startBGM: () => {},
-        stopBGM: () => {}
-      };
-    }
-
-    this.quizController = new QuizController(this.playerData, this.soundSystem);
-    this.memoryController = new MemoryController(this.playerData, this.soundSystem);
-    this.speedCalcController = new SpeedCalcController(this.playerData, this.soundSystem);
+    this.quizController = new QuizController(this.playerData, SoundSystem);
+    this.memoryController = new MemoryController(this.playerData, SoundSystem);
+    this.speedCalcController = new SpeedCalcController(this.playerData, SoundSystem);
   }
 
   wireUpTitleScreen() {
@@ -6502,7 +6343,7 @@ class App {
     this.homeScreenManager.render();
     this.screenManager.clearHistory();
     this.screenManager.showScreen('#home-screen');
-    this.soundSystem.startBGM?.();
+    SoundSystem.startBGM?.();
   }
 
   wireUpHomeScreen() {
@@ -6628,7 +6469,7 @@ class App {
     `;
 
     if (results.type === 'memory') {
-      html += `<p class="result-detail">フリップ数: ${results.flips}</p>`;
+      html += `<p class="result-detail">フリップ数: ${results.moves}</p>`;
     } else if (results.type === 'speedcalc') {
       html += `<p class="result-detail">${results.problemsSolved}問解きました</p>`;
     }
@@ -6826,6 +6667,20 @@ class App {
       });
     });
   }
+
+  initializeSoundSystem() {
+    // SoundSystem is a global object from part 6, use it directly
+    if (typeof SoundSystem !== 'undefined' && SoundSystem.init) {
+      SoundSystem.init();
+    }
+
+    // Initialize controllers with global SoundSystem
+    if (!this.quizController) {
+      this.quizController = new QuizController(this.playerData, SoundSystem);
+      this.memoryController = new MemoryController(this.playerData, SoundSystem);
+      this.speedCalcController = new SpeedCalcController(this.playerData, SoundSystem);
+    }
+  }
 }
 
 // ============================================================================
@@ -6837,13 +6692,6 @@ document.addEventListener('DOMContentLoaded', () => {
   app.init();
   window.app = app;
 });
-
-document.addEventListener('click', () => {
-  if (window.app && !window.app.soundSystem) {
-    window.app.initializeSoundSystem();
-  }
-}, { once: true });
-
-    </script>
+  </script>
 </body>
 </html>
