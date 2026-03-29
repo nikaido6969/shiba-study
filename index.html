@@ -5839,7 +5839,9 @@ class QuizController {
   }
 
   submitAnswer(idx) {
+    if (this.currentQuestionIdx >= 10) return;
     const question = this.currentQuiz.questions[this.currentQuestionIdx];
+    if (!question) return;
     const isCorrect = idx === question.answer;
 
     if (isCorrect) {
