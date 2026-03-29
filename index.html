@@ -5786,16 +5786,17 @@ class QuizController {
     this.correctCount = 0;
     this.answers = [];
 
-    if (type === 'math') {
-      for (let i = 0; i < 10; i++) {
-        const level = this.playerData.getLevel();
-        const question = generateMathQuestion(level);
-        this.currentQuiz.questions.push(question);
+    const level = this.playerData.getLevel();
+    for (let i = 0; i < 10; i++) {
+      let question;
+      if (type === 'math') {
+        question = generateMathQuestion(level);
+      } else if (type === 'kanji') {
+        question = (typeof generateKanjiQuestion === 'function') ? generateKanjiQuestion(level) : this._generateDefaultKanjiQuestions()[i % 2];
+      } else if (type === 'trivia') {
+        question = this._generateTriviaQuestion(level);
       }
-    } else if (type === 'kanji') {
-      this.currentQuiz.questions = this._getKanjiQuestions();
-    } else if (type === 'trivia') {
-      this.currentQuiz.questions = this._getTriviaQuestions();
+      if (question) this.currentQuiz.questions.push(question);
     }
 
     this.displayQuestion();
@@ -5814,7 +5815,7 @@ class QuizController {
           <p>問題 ${qNum}/10</p>
         </div>
         <div class="quiz-question">
-          <p class="q-text">${question.text}</p>
+          <p class="q-text">${question.question}</p>
           <div class="quiz-choices" id="quiz-choices">
             ${question.choices.map((choice, idx) => `
               <button class="choice-btn" data-idx="${idx}">${choice}</button>
@@ -5839,7 +5840,7 @@ class QuizController {
 
   submitAnswer(idx) {
     const question = this.currentQuiz.questions[this.currentQuestionIdx];
-    const isCorrect = idx === question.correctIdx;
+    const isCorrect = idx === question.answer;
 
     if (isCorrect) {
       this.correctCount++;
@@ -5889,33 +5890,28 @@ class QuizController {
     return window.quizResults;
   }
 
-  _getKanjiQuestions() {
-    if (typeof KANJI_QUESTIONS === 'undefined') {
-      return this._generateDefaultKanjiQuestions();
+  _generateTriviaQuestion(level) {
+    if (typeof TRIVIA_DATA !== 'undefined') {
+      const lvl = Math.min(level, 5);
+      const pool = TRIVIA_DATA[lvl] || TRIVIA_DATA[1] || [];
+      if (pool.length > 0) {
+        return pool[Math.floor(Math.random() * pool.length)];
+      }
     }
-    const shuffled = [...KANJI_QUESTIONS].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, 10);
-  }
-
-  _getTriviaQuestions() {
-    if (typeof TRIVIA_DATA === 'undefined') {
-      return this._generateDefaultTriviaQuestions();
-    }
-    const shuffled = [...TRIVIA_DATA].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, 10);
+    return this._generateDefaultTriviaQuestions()[0];
   }
 
   _generateDefaultKanjiQuestions() {
     return [
       {
-        text: '「木」の意味は？',
+        question: '「木」の意味は？',
         choices: ['木（き）', '水', '火', '土'],
-        correctIdx: 0
+        answer: 0
       },
       {
-        text: '「火」の意味は？',
+        question: '「火」の意味は？',
         choices: ['水', '火（ひ）', '土', '金'],
-        correctIdx: 1
+        answer: 1
       }
     ];
   }
@@ -5923,9 +5919,9 @@ class QuizController {
   _generateDefaultTriviaQuestions() {
     return [
       {
-        text: '日本の首都は？',
+        question: '日本の首都は？',
         choices: ['大阪', '東京', '京都', '奈良'],
-        correctIdx: 1
+        answer: 1
       }
     ];
   }
